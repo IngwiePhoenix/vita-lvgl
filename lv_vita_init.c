@@ -35,8 +35,8 @@ bool lv_vita_touchpad_read(lv_indev_t* indev, lv_indev_data_t* data) {
     if(data->state == LV_INDEV_STATE_PR) {
         // FIXME: Need to verify types
         // FIXME: Need to iterate through touchData.reports via touchData.reportNum
-        data->point.x = touchData.reports[0].x;
-        data->point.y = touchData.reports[0].y;
+        data->point.x = touchData.report[0].x;
+        data->point.y = touchData.report[0].y;
     }
 
     // Return `false` because we are not buffering and no more data to read
@@ -61,14 +61,14 @@ bool lv_vita_controller_read(lv_indev_t* indev, lv_indev_data_t* data) {
         // Ontop of that, where do I bind the rest? o.o'
         unsigned int btn = ctrlData.buttons;
         unsigned int lvbtn = 0;
-             if(btn & SCE_CTRL_UP)      lvbtn = LV_KEY_UP;
-        else if(btn & SCE_CTR_DOWN)     lvbtn = LV_KEY_DOWN;
-        else if(btn & SCE_CTR_LEFT)     lvbtn = LV_KEY_LEFT;
-        else if(btn & SCE_CTR_RIGHT)    lvbtn = LV_KEY_RIGHT;
-        else if(btn & SCE_CTR_CROSS)    lvbtn = LV_KEY_ENTER;
-        else if(btn & SCE_CTR_CIRCLE)   lvbtn = LV_KEY_ESC;
-        else if(btn & SCE_CTR_LTRIGGER) lvbtn = LV_KEY_PREV;
-        else if(btn & SCE_CTR_RTRIGGER) lvbtn = LV_KEY_NEXT;
+             if(btn & SCE_CTRL_UP)       lvbtn = LV_KEY_UP;
+        else if(btn & SCE_CTRL_DOWN)     lvbtn = LV_KEY_DOWN;
+        else if(btn & SCE_CTRL_LEFT)     lvbtn = LV_KEY_LEFT;
+        else if(btn & SCE_CTRL_RIGHT)    lvbtn = LV_KEY_RIGHT;
+        else if(btn & SCE_CTRL_CROSS)    lvbtn = LV_KEY_ENTER;
+        else if(btn & SCE_CTRL_CIRCLE)   lvbtn = LV_KEY_ESC;
+        else if(btn & SCE_CTRL_LTRIGGER) lvbtn = LV_KEY_PREV;
+        else if(btn & SCE_CTRL_RTRIGGER) lvbtn = LV_KEY_NEXT;
         data->state = LV_INDEV_STATE_PR;
         data->key = lvbtn;
     }
@@ -92,16 +92,16 @@ void lv_vita_init() {
     sceTouchSetSamplingState(SCE_TOUCH_PORT_FRONT, SCE_TOUCH_SAMPLING_STATE_START);
     lv_indev_drv_t fronttouch_drv;
     lv_indev_drv_init(&fronttouch_drv);
-    indev_drv.type = LV_INDEV_TYPE_POINTER;
-    indev_drv.read_cb = lv_vita_touchpad_read;
+    fronttouch_drv.type = LV_INDEV_TYPE_POINTER;
+    fronttouch_drv.read_cb = lv_vita_touchpad_read;
     lv_indev_t* vita_front_touch = lv_indev_drv_register(&fronttouch_drv);
 
     // Keypad
     ksceCtrlSetSamplingMode(SCE_CTRL_MODE_DIGITAL);
     lv_indev_drv_t controller_drv;
     lv_indev_drv_init(&controller_drv);
-    indev_drv.type = LV_INDEV_TYPE_KEYPAD;
-    indev_drv.read_cb = lv_vita_controller_read;
+    controller_drv.type = LV_INDEV_TYPE_KEYPAD;
+    controller_drv.read_cb = lv_vita_controller_read;
     lv_indev_t* vita_controller = lv_indev_drv_register(&controller_drv);
 
 }
